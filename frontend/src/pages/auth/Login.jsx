@@ -13,24 +13,24 @@ export default function Login() {
   const [successMessage, setSuccessMessage] = useState(''); // Başarı mesajı için durum
   const navigate = useNavigate(); // useNavigate hook'unu kullanarak yönlendirme yapacağız
 
-  const handleSubmit = async (e) => {
+ const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post('http://localhost:3000/api/auth/login', {
-        email: formData.email,
-        password: formData.password
-      });
-      localStorage.setItem('token', response.data.token); // Token'ı localStorage'a kaydet
-      setSuccessMessage('Giriş başarılı!'); // Başarı mesajını ayarla
-      setTimeout(() => {
-        navigate('/home'); // Giriş başarılıysa /home sayfasına yönlendir
-      }, 1000); // 1 saniye beklemeden sonra yönlendir
+        const response = await axios.post('/api/auth/login', { email:formData.email, password:formData.password});
+        const { data } = response;
+
+        if (data.success) {
+            // Token'ı localStorage'a kaydet
+            localStorage.setItem('token', data.data.token);
+            navigate('/home/profile'); // Giriş başarılıysa profil sayfasına yönlendir
+        } else {
+            setErrors(data.message || 'Giriş başarısız');
+        }
     } catch (error) {
-      console.error('Giriş hatası:', error);
-      setErrors({ ...errors, login: 'Giriş bilgilerinizi kontrol edin.' }); // Hata mesajı ayarla
-      setSuccessMessage(''); // Hata durumunda başarı mesajını sıfırla
+        console.error('Giriş hatası:', error);
+        setErrors('Giriş işlemi sırasında bir hata oluştu.'); // Genel hata mesajı
     }
-  };
+};
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">

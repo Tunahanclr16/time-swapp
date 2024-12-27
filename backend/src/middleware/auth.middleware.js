@@ -54,3 +54,22 @@ const protect = async (req, res, next) => {
 module.exports = {
     protect
 } 
+
+const authenticate = (req, res, next) => {
+    const token = req.headers.authorization?.split(' ')[1]; // Token'ı al
+
+    if (!token) {
+        return res.status(401).json({ success: false, message: 'Token is required' });
+    }
+
+    try {
+        const decoded = jwt.verify(token, process.env.JWT_SECRET || 'gizli-anahtar');
+        req.user = decoded; // Kullanıcı bilgilerini req.user'a ata
+        next(); // Middleware'i geç
+    } catch (error) {
+        console.error('Token doğrulama hatası:', error); // Hata mesajını logla
+        return res.status(401).json({ success: false, message: 'Invalid token' });
+    }
+};
+
+module.exports = authenticate;

@@ -40,28 +40,37 @@ const getUserById = async (req, res) => {
     }
 }
 
-// Kullanıcı profili getir
 const getProfile = async (req, res) => {
+    console.log('Request User:', req.user); // Kullanıcı bilgilerini logla
+    if (!req.user || !req.user.id) {
+        return res.status(400).json({
+            success: false,
+            message: 'Geçersiz kullanıcı ID'
+        });
+    }
+
     try {
-        const user = await User.findById(req.user.id, '-password')
+        const user = await User.findById(req.user.id, '-password'); // Şifreyi hariç tut
         if (!user) {
             return res.status(404).json({
                 success: false,
                 message: 'Kullanıcı bulunamadı'
-            })
+            });
         }
         res.status(200).json({
             success: true,
             data: user
-        })
+        });
     } catch (error) {
+        console.error('Profil bilgileri getirilirken hata:', error); // Hata mesajını logla
         res.status(500).json({
             success: false,
             message: 'Profil bilgileri getirilirken hata oluştu',
-            error: error.message
-        })
+            error: error.message // Hata mesajını döndür
+        });
     }
-}
+};
+
 
 module.exports = {
     getAllUsers,

@@ -1,8 +1,32 @@
 import React, { useState } from 'react';
 import { Clock, Bell, MessageCircle, User } from 'lucide-react';
 import { Link } from 'react-router-dom';
-
+import { useNavigate } from 'react-router-dom';
+import axios from 'axios'; // Ensure this line is present
 export default function Navbar() {
+
+
+    const navigate = useNavigate();
+
+    const handleLogout = async () => {
+        try {
+            // Call the logout endpoint using Axios
+            await axios.post('/api/auth/logout', {}, {
+                headers: {
+                    'Content-Type': 'application/json',
+                    // Add any necessary headers here
+                },
+            });
+
+            // Remove the token from local storage
+            localStorage.removeItem('token');
+
+            // Redirect to login page
+            navigate('/login');
+        } catch (error) {
+            console.error('Logout Error:', error);
+        }
+    };
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const timeBalance = 25; // This would come from your state management
 
@@ -12,6 +36,10 @@ export default function Navbar() {
 
   return (
     <nav className="bg-white shadow-sm sticky top-0 z-50">
+        <>
+            {/* Other navbar items */}
+            <button onClick={handleLogout}>Logout</button>
+        </>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           <div className="flex items-center">
